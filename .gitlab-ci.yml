@@ -13,10 +13,15 @@ cache:
     - .gradle/wrapper
     - .gradle/caches
 
+# Clean up Gradle cache after build
+after_script:
+  - rm -rf service/.gradle
+
 build:
   stage: build
   image: gradle:jdk17 # Use the appropriate Gradle and JDK version for your project
   script:
+    - git config --global core.longpaths true
     - cd service
     - gradle build
   artifacts:
@@ -27,6 +32,7 @@ test:
   stage: test
   image: gradle:jdk17
   script:
+    - git config --global core.longpaths true
     - cd service
     - gradle test
   dependencies:
@@ -38,6 +44,7 @@ deploy:
   services:
     - docker:dind
   script:
+    - git config --global core.longpaths true
     - cd database
     - docker-compose up -d
     - cd ../service
