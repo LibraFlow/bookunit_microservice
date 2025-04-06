@@ -17,17 +17,17 @@ build:
   stage: build
   image: gradle:jdk17 # Use the appropriate Gradle and JDK version for your project
   script:
-    - cd bookunit_service
+    - cd service
     - gradle build
   artifacts:
     paths:
-      - bookunit_service/build/libs/*.jar
+      - service/build/libs/*.jar
 
 test:
   stage: test
   image: gradle:jdk17
   script:
-    - cd bookunit_service
+    - cd service
     - gradle test
   dependencies:
     - build
@@ -40,8 +40,8 @@ deploy:
   script:
     - cd database
     - docker-compose up -d
-    - cd ../bookunit_service
-    - docker build -t bookunit_service:latest .
-    - docker run -d --name bookunit_service_app --network host bookunit_service:latest
+    - cd ../service
+    - docker build -t service:latest .
+    - docker run -d --name service_app --network host service:latest
   only:
     - main # Deploy only when changes are pushed to the main branch
