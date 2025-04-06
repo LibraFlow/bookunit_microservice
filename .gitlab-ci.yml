@@ -7,7 +7,7 @@ variables:
   # Gradle-specific variables
   GRADLE_OPTS: "-Dorg.gradle.daemon=false"
   # Enable Git long paths
-  GIT_CONFIG_PARAMETERS: "core.longpaths=true"
+  GIT_CONFIG_PARAMETERS: "core.longpaths=true;"
 
 # Cache Gradle dependencies to speed up builds
 cache:
