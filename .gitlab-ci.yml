@@ -6,18 +6,12 @@ stages:
 variables:
   # Gradle-specific variables
   GRADLE_OPTS: "-Dorg.gradle.daemon=false"
-  # Enable Git long paths
-  GIT_CONFIG_PARAMETERS: "core.longpaths=true;"
 
 # Cache Gradle dependencies to speed up builds
 cache:
   paths:
     - .gradle/wrapper
     - .gradle/caches
-
-# Clean up Gradle cache after build
-after_script:
-  - rm -rf bookunit_service/.gradle
 
 build:
   stage: build
