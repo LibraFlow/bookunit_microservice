@@ -13,27 +13,21 @@ cache:
     - .gradle/wrapper
     - .gradle/caches
 
-# Clean up Gradle cache after build
-after_script:
-  - rm -rf service/.gradle
-
 build:
   stage: build
   image: gradle:jdk17 # Use the appropriate Gradle and JDK version for your project
   script:
-    - git config --global core.longpaths true
-    - cd service
+    - cd bookunit_service
     - gradle build
   artifacts:
     paths:
-      - service/build/libs/*.jar
+      - bookunit_service/build/libs/*.jar
 
 test:
   stage: test
   image: gradle:jdk17
   script:
-    - git config --global core.longpaths true
-    - cd service
+    - cd bookunit_service
     - gradle test
   dependencies:
     - build
@@ -44,11 +38,10 @@ deploy:
   services:
     - docker:dind
   script:
-    - git config --global core.longpaths true
     - cd database
     - docker-compose up -d
-    - cd ../service
-    - docker build -t service:latest .
-    - docker run -d --name service_app --network host service:latest
+    - cd ../bookunit_service
+    - docker build -t bookunit_service:latest .
+    - docker run -d --name bookunit_service_app --network host bookunit_service:latest
   only:
     - main # Deploy only when changes are pushed to the main branch
