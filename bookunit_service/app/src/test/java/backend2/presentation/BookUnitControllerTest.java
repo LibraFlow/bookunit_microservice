@@ -46,10 +46,13 @@ public class BookUnitControllerTest {
     void setUp() {
         testBookUnitDTO = BookUnitDTO.builder()
                 .id(1)
-                .bookId(1)
-                .unitNumber(1)
-                .title("Test Unit")
-                .content("Test Content")
+                .bookId(100)
+                .language("English")
+                .pageCount(250)
+                .availability(true)
+                .coverImageLink("http://example.com/cover.jpg")
+                .publisher("Test Publisher")
+                .isbn("978-3-16-148410-0")
                 .build();
     }
 
@@ -86,7 +89,7 @@ public class BookUnitControllerTest {
     @Test
     void getBookUnitsByBookIdTest() {
         // Arrange
-        Integer bookId = 1;
+        Integer bookId = 100;
         List<BookUnitDTO> expectedBookUnits = Arrays.asList(testBookUnitDTO);
         when(getBookUnitsByBookIdUseCase.getBookUnitsByBookId(anyInt())).thenReturn(expectedBookUnits);
 
