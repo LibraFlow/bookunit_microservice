@@ -19,6 +19,9 @@ public class AddBookUnitUseCase {
 
     @Transactional
     public BookUnitDTO addBook(BookUnitDTO bookUnitDTO) {
+        if (bookUnitDTO == null) {
+            throw new IllegalArgumentException("BookUnitDTO cannot be null");
+        }
         BookUnitEntity bookUnitEntity = bookUnitMapper.toEntity(bookUnitDTO);
         BookUnitEntity savedBookUnit = bookUnitRepository.save(bookUnitEntity);
         return bookUnitMapper.toDTO(savedBookUnit);
