@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  db4:
+    image: postgres:latest
+    container_name: bookunit_container
+    environment:
+      POSTGRES_USER: user4
+      POSTGRES_PASSWORD: password4
+      POSTGRES_DB: db4
+    ports:
+      - "5435:5432"
+    volumes:
+      - db4-data:/var/lib/postgresql/data
+    networks:
+      - bookunit-network
+
+  bookunit-service:
+    build:
+      context: ./bookunit_service
+      dockerfile: Dockerfile
+    container_name: bookunit-service
+    ports:
+      - "8085:8085"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db4:5432/db4
+      - SPRING_DATASOURCE_USERNAME=user4
+      - SPRING_DATASOURCE_PASSWORD=password4
+    depends_on:
+      - db4
+    networks:
+      - bookunit-network
+
+volumes:
+  db4-data:
+
+networks:
+  bookunit-network:
+    driver: bridge 
