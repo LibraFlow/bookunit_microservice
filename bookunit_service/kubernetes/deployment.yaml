@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bookunit-service
+  labels:
+    app: bookunit-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bookunit-service
+  template:
+    metadata:
+      labels:
+        app: bookunit-service
+    spec:
+      serviceAccountName: cloudsql-sa
+      containers:
+      - name: bookunit-service
+        image: ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT_ID}/bookunit-service/bookunit-service:${CI_COMMIT_SHA}
+        ports:
+        - containerPort: 8085
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: "prod"
+        - name: SPRING_DATASOURCE_URL
+          value: "jdbc:postgresql://cloudsql-proxy:5432/db5"
+        - name: SPRING_DATASOURCE_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: bookunit-service-secrets
+              key: spring.datasource.username
+        - name: SPRING_DATASOURCE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: bookunit-service-secrets
+              key: spring.datasource.password
+        resources:
+          requests:
+            cpu: "250m"
+            memory: "256Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+        readinessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8085
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8085
+          initialDelaySeconds: 60
+          periodSeconds: 15
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: bookunit-service-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: bookunit-service
+  minReplicas: 1
+  maxReplicas: 3
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: bookunit-service-pdb
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: bookunit-service 
