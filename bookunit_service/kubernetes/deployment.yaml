@@ -24,7 +24,7 @@ spec:
         - name: SPRING_PROFILES_ACTIVE
           value: "prod"
         - name: SPRING_DATASOURCE_URL
-          value: "jdbc:postgresql://cloudsql-proxy:5432/db5"
+          value: "jdbc:postgresql://cloudsql-proxy:5432/db4"
         - name: SPRING_DATASOURCE_USERNAME
           valueFrom:
             secretKeyRef:
