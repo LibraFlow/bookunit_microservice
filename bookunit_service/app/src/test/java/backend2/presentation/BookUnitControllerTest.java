@@ -10,9 +10,17 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.junit.jupiter.api.AfterEach;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Collection;
+import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -56,8 +64,24 @@ public class BookUnitControllerTest {
                 .build();
     }
 
+    private void mockAuthenticationWithRole(String role) {
+        Authentication authentication = mock(Authentication.class);
+        Collection<? extends GrantedAuthority> authorities =
+            Collections.singletonList(new SimpleGrantedAuthority(role));
+        when(authentication.getAuthorities()).thenReturn((Collection) authorities);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+    }
+
+    @AfterEach
+    void clearSecurityContext() {
+        SecurityContextHolder.clearContext();
+    }
+
     @Test
     void createBookUnitTest() {
+        mockAuthenticationWithRole("ROLE_ADMINISTRATOR");
         // Arrange
         when(addBookUnitUseCase.addBook(any(BookUnitDTO.class))).thenReturn(testBookUnitDTO);
 
@@ -73,6 +97,7 @@ public class BookUnitControllerTest {
 
     @Test
     void deleteBookUnitTest() {
+        mockAuthenticationWithRole("ROLE_ADMINISTRATOR");
         // Arrange
         Integer bookUnitId = 1;
         doNothing().when(deleteBookUnitUseCase).deleteBook(anyInt());
@@ -122,6 +147,7 @@ public class BookUnitControllerTest {
 
     @Test
     void updateBookUnitTest() {
+        mockAuthenticationWithRole("ROLE_ADMINISTRATOR");
         // Arrange
         Integer bookUnitId = 1;
         when(updateBookUnitUseCase.updateBook(anyInt(), any(BookUnitDTO.class))).thenReturn(testBookUnitDTO);
