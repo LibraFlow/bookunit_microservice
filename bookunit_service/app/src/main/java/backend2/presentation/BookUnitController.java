@@ -6,6 +6,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.GrantedAuthority;
 
 import java.util.List;
 
@@ -22,11 +25,25 @@ public class BookUnitController {
 
     @PostMapping
     public ResponseEntity<BookUnitDTO> createBookUnit(@Valid @RequestBody BookUnitDTO bookUnitDTO) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        boolean isAdminOrLibrarian = authentication.getAuthorities().stream()
+            .map(GrantedAuthority::getAuthority)
+            .anyMatch(role -> role.equals("ROLE_ADMINISTRATOR") || role.equals("ROLE_LIBRARIAN"));
+        if (!isAdminOrLibrarian) {
+            return ResponseEntity.status(403).build();
+        }
         return ResponseEntity.ok(addBookUnitUseCase.addBook(bookUnitDTO));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteBookUnit(@PathVariable Integer id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        boolean isAdminOrLibrarian = authentication.getAuthorities().stream()
+            .map(GrantedAuthority::getAuthority)
+            .anyMatch(role -> role.equals("ROLE_ADMINISTRATOR") || role.equals("ROLE_LIBRARIAN"));
+        if (!isAdminOrLibrarian) {
+            return ResponseEntity.status(403).build();
+        }
         deleteBookUnitUseCase.deleteBook(id);
         return ResponseEntity.noContent().build();
     }
@@ -43,6 +60,13 @@ public class BookUnitController {
 
     @PutMapping("/{id}")
     public ResponseEntity<BookUnitDTO> updateBookUnit(@PathVariable Integer id, @Valid @RequestBody BookUnitDTO bookUnitDTO) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        boolean isAdminOrLibrarian = authentication.getAuthorities().stream()
+            .map(GrantedAuthority::getAuthority)
+            .anyMatch(role -> role.equals("ROLE_ADMINISTRATOR") || role.equals("ROLE_LIBRARIAN"));
+        if (!isAdminOrLibrarian) {
+            return ResponseEntity.status(403).build();
+        }
         return ResponseEntity.ok(updateBookUnitUseCase.updateBook(id, bookUnitDTO));
     }
 }
