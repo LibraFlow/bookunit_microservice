@@ -35,11 +35,6 @@ spec:
             secretKeyRef:
               name: bookunit-service-secrets
               key: spring.datasource.password
-        - name: jwt.secret
-          valueFrom:
-            secretKeyRef:
-              name: bookunit-service-secrets
-              key: jwt.secret
         resources:
           requests:
             cpu: "250m"
