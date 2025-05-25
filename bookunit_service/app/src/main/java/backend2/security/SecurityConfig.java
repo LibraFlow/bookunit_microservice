@@ -28,13 +28,15 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                // Allow GET requests for any authenticated user
-                .requestMatchers(HttpMethod.GET, "/api/v1/bookunits/**").authenticated()
+                // Allow unauthenticated access to only these two endpoints (ant-style wildcards)
+                .requestMatchers(HttpMethod.GET, "/api/v1/bookunits/*", "/api/v1/bookunits/book/*").permitAll()
                 // Restrict POST, PUT, DELETE to ADMINISTRATOR or LIBRARIAN
                 .requestMatchers(HttpMethod.POST, "/api/v1/bookunits/**").hasAnyRole("ADMINISTRATOR", "LIBRARIAN")
                 .requestMatchers(HttpMethod.PUT, "/api/v1/bookunits/**").hasAnyRole("ADMINISTRATOR", "LIBRARIAN")
                 .requestMatchers(HttpMethod.DELETE, "/api/v1/bookunits/**").hasAnyRole("ADMINISTRATOR", "LIBRARIAN")
-                .anyRequest().permitAll()
+                // All other bookunit endpoints require authentication
+                .requestMatchers(HttpMethod.GET, "/api/v1/bookunits/**").authenticated()
+                .anyRequest().authenticated()
             )
             .oauth2ResourceServer(oauth2 -> oauth2
                 .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
