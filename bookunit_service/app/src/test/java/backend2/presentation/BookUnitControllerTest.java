@@ -161,4 +161,38 @@ public class BookUnitControllerTest {
         assertEquals(testBookUnitDTO, response.getBody());
         verify(updateBookUnitUseCase, times(1)).updateBook(bookUnitId, testBookUnitDTO);
     }
+
+    @Test
+    void createBookUnit_AsLibrarian_ShouldSucceed() {
+        mockAuthenticationWithRole("ROLE_LIBRARIAN");
+        when(addBookUnitUseCase.addBook(any(BookUnitDTO.class))).thenReturn(testBookUnitDTO);
+        ResponseEntity<BookUnitDTO> response = bookUnitController.createBookUnit(testBookUnitDTO);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(testBookUnitDTO, response.getBody());
+    }
+
+    @Test
+    void createBookUnit_AsRegularUser_ShouldBeDenied() {
+        mockAuthenticationWithRole("ROLE_USER");
+        ResponseEntity<BookUnitDTO> response = bookUnitController.createBookUnit(testBookUnitDTO);
+        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+    }
+
+    @Test
+    void updateBookUnit_AsLibrarian_ShouldSucceed() {
+        Integer bookUnitId = 1;
+        mockAuthenticationWithRole("ROLE_LIBRARIAN");
+        when(updateBookUnitUseCase.updateBook(anyInt(), any(BookUnitDTO.class))).thenReturn(testBookUnitDTO);
+        ResponseEntity<BookUnitDTO> response = bookUnitController.updateBookUnit(bookUnitId, testBookUnitDTO);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(testBookUnitDTO, response.getBody());
+    }
+
+    @Test
+    void updateBookUnit_AsRegularUser_ShouldBeDenied() {
+        Integer bookUnitId = 1;
+        mockAuthenticationWithRole("ROLE_USER");
+        ResponseEntity<BookUnitDTO> response = bookUnitController.updateBookUnit(bookUnitId, testBookUnitDTO);
+        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+    }
 } 
