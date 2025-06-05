@@ -10,6 +10,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.ArgumentCaptor;
+import java.time.Instant;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -154,5 +156,34 @@ class UpdateBookUnitUseCaseTest {
         verify(bookUnitRepository).save(argThat(entity -> 
             entity.getCreatedAt().equals(testCreatedAt)
         ));
+    }
+
+    @Test
+    void onlyAuthorizedRolesCanUpdateBookUnit_andAuditTrailIsLogged() {
+        // Arrange
+        BookUnitService service = mock(BookUnitService.class);
+        AuditTrailService auditTrailService = mock(AuditTrailService.class);
+        User librarian = new User("lib1", "Librarian");
+        User admin = new User("admin1", "Administrator");
+        User regular = new User("user1", "User");
+        BookUnit unit = new BookUnit(1L, "Good");
+
+        // Act & Assert: Librarian can update
+        service.updateBookUnit(unit, librarian);
+        verify(service).updateBookUnit(unit, librarian);
+        ArgumentCaptor<AuditTrailEntry> captor = ArgumentCaptor.forClass(AuditTrailEntry.class);
+        verify(auditTrailService).log(captor.capture());
+        AuditTrailEntry entry = captor.getValue();
+        assertEquals("lib1", entry.getUserId());
+        assertEquals("UPDATE_BOOK_UNIT", entry.getAction());
+        assertNotNull(entry.getTimestamp());
+
+        // Act & Assert: Admin can update
+        service.updateBookUnit(unit, admin);
+        verify(service).updateBookUnit(unit, admin);
+
+        // Act & Assert: Regular user cannot update
+        doThrow(new SecurityException("Unauthorized")).when(service).updateBookUnit(unit, regular);
+        assertThrows(SecurityException.class, () -> service.updateBookUnit(unit, regular));
     }
 } 
