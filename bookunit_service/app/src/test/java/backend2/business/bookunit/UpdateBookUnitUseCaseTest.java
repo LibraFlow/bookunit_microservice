@@ -20,6 +20,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.*;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.Appender;
+import org.slf4j.LoggerFactory;
 
 @ExtendWith(MockitoExtension.class)
 class UpdateBookUnitUseCaseTest {
@@ -39,6 +43,7 @@ class UpdateBookUnitUseCaseTest {
     private BookUnitEntity savedBookUnitEntity;
     private LocalDate testCreatedAt;
     private Integer testBookUnitId;
+    private BookUnitEntity testBookUnitEntity;
 
     @BeforeEach
     void setUp() {
@@ -92,6 +97,18 @@ class UpdateBookUnitUseCaseTest {
                 .isbn("978-3-16-148410-1")
                 .createdAt(testCreatedAt)
                 .build();
+
+        testBookUnitEntity = BookUnitEntity.builder()
+            .id(1)
+            .bookId(100)
+            .language("English")
+            .pageCount(250)
+            .availability(true)
+            .coverImageLink("http://example.com/cover.jpg")
+            .publisher("Test Publisher")
+            .isbn("978-3-16-148410-0")
+            .createdAt(LocalDate.now())
+            .build();
     }
 
     @Test
@@ -159,31 +176,26 @@ class UpdateBookUnitUseCaseTest {
     }
 
     @Test
-    void onlyAuthorizedRolesCanUpdateBookUnit_andAuditTrailIsLogged() {
+    void updateBookUnit_ShouldLogAuditTrail() {
         // Arrange
-        BookUnitService service = mock(BookUnitService.class);
-        AuditTrailService auditTrailService = mock(AuditTrailService.class);
-        User librarian = new User("lib1", "Librarian");
-        User admin = new User("admin1", "Administrator");
-        User regular = new User("user1", "User");
-        BookUnit unit = new BookUnit(1L, "Good");
+        Logger logger = (Logger) LoggerFactory.getLogger(UpdateBookUnitUseCase.class);
+        @SuppressWarnings("unchecked")
+        Appender<ILoggingEvent> mockAppender = mock(Appender.class);
+        logger.addAppender(mockAppender);
 
-        // Act & Assert: Librarian can update
-        service.updateBookUnit(unit, librarian);
-        verify(service).updateBookUnit(unit, librarian);
-        ArgumentCaptor<AuditTrailEntry> captor = ArgumentCaptor.forClass(AuditTrailEntry.class);
-        verify(auditTrailService).log(captor.capture());
-        AuditTrailEntry entry = captor.getValue();
-        assertEquals("lib1", entry.getUserId());
-        assertEquals("UPDATE_BOOK_UNIT", entry.getAction());
-        assertNotNull(entry.getTimestamp());
+        when(bookUnitRepository.findById(anyInt())).thenReturn(java.util.Optional.of(testBookUnitEntity));
+        when(bookUnitMapper.toEntity(any(BookUnitDTO.class))).thenReturn(testBookUnitEntity);
+        when(bookUnitRepository.save(any(BookUnitEntity.class))).thenReturn(testBookUnitEntity);
+        when(bookUnitMapper.toDTO(any(BookUnitEntity.class))).thenReturn(testBookUnitDTO);
 
-        // Act & Assert: Admin can update
-        service.updateBookUnit(unit, admin);
-        verify(service).updateBookUnit(unit, admin);
+        // Act
+        updateBookUnitUseCase.updateBook(1, testBookUnitDTO);
 
-        // Act & Assert: Regular user cannot update
-        doThrow(new SecurityException("Unauthorized")).when(service).updateBookUnit(unit, regular);
-        assertThrows(SecurityException.class, () -> service.updateBookUnit(unit, regular));
+        // Assert: verify that the audit log message was produced
+        verify(mockAppender, times(1)).doAppend(argThat(event ->
+            event.getFormattedMessage().contains("AUDIT: BookUnit updated") &&
+            event.getFormattedMessage().contains("bookUnitId=" + testBookUnitEntity.getId())
+        ));
+        logger.detachAppender(mockAppender);
     }
 } 

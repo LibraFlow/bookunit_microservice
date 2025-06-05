@@ -10,6 +10,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.Appender;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 
@@ -109,5 +113,28 @@ class AddBookUnitUseCaseTest {
         // Verify no interactions with dependencies
         verifyNoInteractions(bookUnitRepository);
         verifyNoInteractions(bookUnitMapper);
+    }
+
+    @Test
+    void addBookUnit_ShouldLogAuditTrail() {
+        // Arrange
+        Logger logger = (Logger) LoggerFactory.getLogger(AddBookUnitUseCase.class);
+        @SuppressWarnings("unchecked")
+        Appender<ILoggingEvent> mockAppender = mock(Appender.class);
+        logger.addAppender(mockAppender);
+
+        when(bookUnitMapper.toEntity(any(BookUnitDTO.class))).thenReturn(testBookUnitEntity);
+        when(bookUnitRepository.save(any(BookUnitEntity.class))).thenReturn(testBookUnitEntity);
+        when(bookUnitMapper.toDTO(any(BookUnitEntity.class))).thenReturn(testBookUnitDTO);
+
+        // Act
+        addBookUnitUseCase.addBook(testBookUnitDTO);
+
+        // Assert: verify that the audit log message was produced
+        verify(mockAppender, times(1)).doAppend(argThat(event ->
+            event.getFormattedMessage().contains("AUDIT: BookUnit added") &&
+            event.getFormattedMessage().contains("bookUnitId=" + testBookUnitEntity.getId())
+        ));
+        logger.detachAppender(mockAppender);
     }
 } 
