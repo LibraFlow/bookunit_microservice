@@ -58,6 +58,12 @@ dependencies {
 
     // OAuth2 Resource Server
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+
+    // RabbitMQ dependencies
+    implementation 'org.springframework.boot:spring-boot-starter-amqp'
+
+    // WebClient and Reactor dependencies
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
 }
 
 // Apply a specific Java toolchain to ease working on different environments.

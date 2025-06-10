@@ -9,6 +9,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.HttpHeaders;
 
 import java.util.List;
 
@@ -22,6 +26,10 @@ public class BookUnitController {
     private final GetBookUnitsByBookIdUseCase getBookUnitsByBookIdUseCase;
     private final GetBookUnitUseCase getBookUnitUseCase;
     private final UpdateBookUnitUseCase updateBookUnitUseCase;
+    private final OverdueUnavailableBookUnitsUseCase overdueUnavailableBookUnitsUseCase;
+
+    @Autowired
+    private HttpServletRequest request;
 
     @PostMapping
     public ResponseEntity<BookUnitDTO> createBookUnit(@Valid @RequestBody BookUnitDTO bookUnitDTO) {
@@ -68,5 +76,15 @@ public class BookUnitController {
             return ResponseEntity.status(403).build();
         }
         return ResponseEntity.ok(updateBookUnitUseCase.updateBook(id, bookUnitDTO));
+    }
+
+    @GetMapping("/unavailable-overdue")
+    public ResponseEntity<List<BookUnitDTO>> getUnavailableOverdueBookUnits() {
+        String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(401).build();
+        }
+        String jwtToken = authHeader.substring(7); // Remove "Bearer " prefix
+        return ResponseEntity.ok(overdueUnavailableBookUnitsUseCase.getOverdueUnavailableBookUnits(jwtToken));
     }
 }

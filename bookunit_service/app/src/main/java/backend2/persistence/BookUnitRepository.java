@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface BookUnitRepository extends JpaRepository<BookUnitEntity, Integer> {
     List<BookUnitEntity> findAllByBookId(Integer bookId);
+    List<BookUnitEntity> findAllByAvailabilityFalse();
 }
