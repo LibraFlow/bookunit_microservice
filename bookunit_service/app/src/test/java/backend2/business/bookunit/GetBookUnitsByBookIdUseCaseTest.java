@@ -98,7 +98,7 @@ class GetBookUnitsByBookIdUseCaseTest {
     @Test
     void getBookUnitsByBookId_Success() {
         // Arrange
-        when(bookUnitRepository.findAllByBookId(testBookId)).thenReturn(testBookUnitEntities);
+        when(bookUnitRepository.findAllByBookIdAndDeletedFalse(testBookId)).thenReturn(testBookUnitEntities);
         when(bookUnitMapper.toDTO(testBookUnitEntity1)).thenReturn(testBookUnitDTO1);
         when(bookUnitMapper.toDTO(testBookUnitEntity2)).thenReturn(testBookUnitDTO2);
 
@@ -111,7 +111,7 @@ class GetBookUnitsByBookIdUseCaseTest {
         assertEquals(expectedBookUnitDTOs, result);
 
         // Verify interactions
-        verify(bookUnitRepository, times(1)).findAllByBookId(testBookId);
+        verify(bookUnitRepository, times(1)).findAllByBookIdAndDeletedFalse(testBookId);
         verify(bookUnitMapper, times(1)).toDTO(testBookUnitEntity1);
         verify(bookUnitMapper, times(1)).toDTO(testBookUnitEntity2);
     }
@@ -119,7 +119,7 @@ class GetBookUnitsByBookIdUseCaseTest {
     @Test
     void getBookUnitsByBookId_EmptyResult() {
         // Arrange
-        when(bookUnitRepository.findAllByBookId(testBookId)).thenReturn(Collections.emptyList());
+        when(bookUnitRepository.findAllByBookIdAndDeletedFalse(testBookId)).thenReturn(Collections.emptyList());
 
         // Act
         List<BookUnitDTO> result = getBookUnitsByBookIdUseCase.getBookUnitsByBookId(testBookId);
@@ -129,7 +129,7 @@ class GetBookUnitsByBookIdUseCaseTest {
         assertTrue(result.isEmpty());
 
         // Verify interactions
-        verify(bookUnitRepository, times(1)).findAllByBookId(testBookId);
+        verify(bookUnitRepository, times(1)).findAllByBookIdAndDeletedFalse(testBookId);
         verify(bookUnitMapper, never()).toDTO(any());
     }
 
@@ -143,7 +143,7 @@ class GetBookUnitsByBookIdUseCaseTest {
         assertTrue(result.isEmpty());
 
         // Verify interactions
-        verify(bookUnitRepository, times(1)).findAllByBookId(null);
+        verify(bookUnitRepository, times(1)).findAllByBookIdAndDeletedFalse(null);
         verify(bookUnitMapper, never()).toDTO(any());
     }
 } 

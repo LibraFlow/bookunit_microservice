@@ -1,6 +1,7 @@
 package backend2.business.bookunit;
 
 import backend2.persistence.BookUnitRepository;
+import backend2.persistence.entity.BookUnitEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,22 +31,34 @@ class DeleteBookUnitUseCaseTest {
     @Test
     void deleteBook_Success() {
         // Arrange
-        when(bookUnitRepository.existsById(testBookUnitId)).thenReturn(true);
-        doNothing().when(bookUnitRepository).deleteById(testBookUnitId);
+        BookUnitEntity entity = BookUnitEntity.builder()
+            .id(testBookUnitId)
+            .bookId(100)
+            .language("English")
+            .pageCount(250)
+            .availability(true)
+            .coverImageLink("http://example.com/cover.jpg")
+            .publisher("Test Publisher")
+            .isbn("978-3-16-148410-0")
+            .createdAt(java.time.LocalDate.now())
+            .deleted(false)
+            .build();
+        when(bookUnitRepository.findById(testBookUnitId)).thenReturn(java.util.Optional.of(entity));
+        when(bookUnitRepository.save(entity)).thenReturn(entity);
 
         // Act
         Void result = deleteBookUnitUseCase.deleteBook(testBookUnitId);
 
         // Assert
         assertNull(result);
-        verify(bookUnitRepository, times(1)).existsById(testBookUnitId);
-        verify(bookUnitRepository, times(1)).deleteById(testBookUnitId);
+        verify(bookUnitRepository, times(1)).findById(testBookUnitId);
+        verify(bookUnitRepository, times(1)).save(entity);
     }
 
     @Test
     void deleteBook_BookUnitNotFound_ShouldThrowException() {
         // Arrange
-        when(bookUnitRepository.existsById(testBookUnitId)).thenReturn(false);
+        when(bookUnitRepository.findById(testBookUnitId)).thenReturn(java.util.Optional.empty());
 
         // Act & Assert
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
@@ -53,7 +66,7 @@ class DeleteBookUnitUseCaseTest {
         });
 
         assertEquals("Book not found with id: " + testBookUnitId, exception.getMessage());
-        verify(bookUnitRepository, times(1)).existsById(testBookUnitId);
-        verify(bookUnitRepository, never()).deleteById(any());
+        verify(bookUnitRepository, times(1)).findById(testBookUnitId);
+        verify(bookUnitRepository, never()).save(any());
     }
 } 

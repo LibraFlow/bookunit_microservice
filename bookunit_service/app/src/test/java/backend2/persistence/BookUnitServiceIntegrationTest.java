@@ -103,7 +103,7 @@ public class BookUnitServiceIntegrationTest {
                 .build();
         bookUnitRepository.save(testUnit);
         bookUnitRepository.save(unavailable);
-        List<BookUnitEntity> units = bookUnitRepository.findAllByAvailabilityFalse();
+        List<BookUnitEntity> units = bookUnitRepository.findAllByAvailabilityFalseAndDeletedFalse();
         assertTrue(units.stream().anyMatch(u -> !u.getAvailability()));
     }
 

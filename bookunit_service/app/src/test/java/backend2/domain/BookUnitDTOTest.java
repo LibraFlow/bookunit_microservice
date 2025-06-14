@@ -17,6 +17,7 @@ class BookUnitDTOTest {
                 .coverImageLink("http://example.com/cover.jpg")
                 .publisher("Test Publisher")
                 .isbn("978-3-16-148410-0")
+                .deleted(false)
                 .build();
 
         // Assert
@@ -36,7 +37,7 @@ class BookUnitDTOTest {
         // Arrange & Act
         BookUnitDTO bookUnitDTO = new BookUnitDTO(
             1, 100, "English", 250, true,
-            "http://example.com/cover.jpg", "Test Publisher", "978-3-16-148410-0"
+            "http://example.com/cover.jpg", "Test Publisher", "978-3-16-148410-0", false
         );
 
         // Assert
@@ -63,6 +64,7 @@ class BookUnitDTOTest {
                 .coverImageLink("http://example.com/cover.jpg")
                 .publisher("Test Publisher")
                 .isbn("978-3-16-148410-0")
+                .deleted(false)
                 .build();
 
         BookUnitDTO bookUnitDTO2 = BookUnitDTO.builder()
@@ -74,6 +76,7 @@ class BookUnitDTOTest {
                 .coverImageLink("http://example.com/cover.jpg")
                 .publisher("Test Publisher")
                 .isbn("978-3-16-148410-0")
+                .deleted(false)
                 .build();
 
         BookUnitDTO bookUnitDTO3 = BookUnitDTO.builder()
@@ -85,6 +88,7 @@ class BookUnitDTOTest {
                 .coverImageLink("http://example.com/cover2.jpg")
                 .publisher("Different Publisher")
                 .isbn("978-3-16-148410-1")
+                .deleted(false)
                 .build();
 
         // Assert
@@ -106,6 +110,7 @@ class BookUnitDTOTest {
                 .coverImageLink("http://example.com/cover.jpg")
                 .publisher("Test Publisher")
                 .isbn("978-3-16-148410-0")
+                .deleted(false)
                 .build();
 
         // Act

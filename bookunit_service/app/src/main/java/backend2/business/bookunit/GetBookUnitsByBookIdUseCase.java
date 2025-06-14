@@ -17,7 +17,7 @@ public class GetBookUnitsByBookIdUseCase {
     private final BookUnitMapper bookUnitMapper;
 
     public List<BookUnitDTO> getBookUnitsByBookId(Integer bookId) {
-        return bookUnitRepository.findAllByBookId(bookId)
+        return bookUnitRepository.findAllByBookIdAndDeletedFalse(bookId)
                 .stream()
                 .map(bookUnitMapper::toDTO)
                 .collect(Collectors.toList());

@@ -18,7 +18,7 @@ public class OverdueUnavailableBookUnitsUseCase {
     private final BorrowingServiceClient borrowingServiceClient;
 
     public List<BookUnitDTO> getOverdueUnavailableBookUnits(String jwtToken) {
-        List<BookUnitEntity> unavailableUnits = bookUnitRepository.findAllByAvailabilityFalse();
+        List<BookUnitEntity> unavailableUnits = bookUnitRepository.findAllByAvailabilityFalseAndDeletedFalse();
         LocalDate now = LocalDate.now();
         return unavailableUnits.stream()
             .filter(unit -> {

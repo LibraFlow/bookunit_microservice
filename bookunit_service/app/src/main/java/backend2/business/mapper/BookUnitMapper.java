@@ -26,6 +26,7 @@ public class BookUnitMapper {
                 .coverImageLink(entity.getCoverImageLink())
                 .publisher(entity.getPublisher())
                 .isbn(entity.getIsbn())
+                .deleted(entity.getDeleted())
                 .build();
     }
 
@@ -43,6 +44,7 @@ public class BookUnitMapper {
                 .coverImageLink(dto.getCoverImageLink())
                 .publisher(dto.getPublisher())
                 .isbn(dto.getIsbn())
+                .deleted(dto.getDeleted() != null ? dto.getDeleted() : false)
                 .createdAt(dto.getId() == null ? LocalDate.now() : null) // Set createdAt only for new entities
                 .build();
     }

@@ -8,6 +8,8 @@ import java.util.List;
 
 @Repository
 public interface BookUnitRepository extends JpaRepository<BookUnitEntity, Integer> {
+    List<BookUnitEntity> findAllByBookIdAndDeletedFalse(Integer bookId);
+    List<BookUnitEntity> findAllByAvailabilityFalseAndDeletedFalse();
+    BookUnitEntity findByIdAndDeletedFalse(Integer id);
     List<BookUnitEntity> findAllByBookId(Integer bookId);
-    List<BookUnitEntity> findAllByAvailabilityFalse();
 }

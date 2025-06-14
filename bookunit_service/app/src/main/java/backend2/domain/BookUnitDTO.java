@@ -16,4 +16,5 @@ public class BookUnitDTO {
     private String coverImageLink;
     private String publisher;
     private String isbn;
+    private Boolean deleted;
 }

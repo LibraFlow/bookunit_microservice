@@ -56,4 +56,9 @@ public class BookUnitEntity {
     @PastOrPresent
     @Column(nullable = false)
     private LocalDate createdAt;
+
+    @NotNull
+    @Column(nullable = false)
+    @Builder.Default
+    private Boolean deleted = false;
 }

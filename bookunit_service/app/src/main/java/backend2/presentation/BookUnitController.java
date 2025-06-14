@@ -63,7 +63,11 @@ public class BookUnitController {
 
     @GetMapping("/{id}")
     public ResponseEntity<BookUnitDTO> getBookUnit(@PathVariable Integer id) {
-        return ResponseEntity.ok(getBookUnitUseCase.getBook(id));
+        BookUnitDTO bookUnit = getBookUnitUseCase.getBook(id);
+        if (bookUnit == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(bookUnit);
     }
 
     @PutMapping("/{id}")

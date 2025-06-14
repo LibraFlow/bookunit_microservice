@@ -33,6 +33,7 @@ class BookUnitEntityTest {
                 .publisher("Test Publisher")
                 .isbn("978-3-16-148410-0")
                 .createdAt(testDate)
+                .deleted(false)
                 .build();
 
         assertNotNull(builtEntity);
@@ -86,6 +87,7 @@ class BookUnitEntityTest {
                 .publisher("Test Publisher")
                 .isbn("978-3-16-148410-0")
                 .createdAt(testDate)
+                .deleted(false)
                 .build();
 
         BookUnitEntity entity2 = BookUnitEntity.builder()
@@ -98,6 +100,7 @@ class BookUnitEntityTest {
                 .publisher("Test Publisher")
                 .isbn("978-3-16-148410-0")
                 .createdAt(testDate)
+                .deleted(false)
                 .build();
 
         assertEquals(entity1, entity2);
@@ -118,6 +121,7 @@ class BookUnitEntityTest {
                 .publisher("Test Publisher")
                 .isbn("978-3-16-148410-0")
                 .createdAt(testDate)
+                .deleted(false)
                 .build();
 
         String toString = entity.toString();
@@ -144,7 +148,7 @@ class BookUnitEntityTest {
         LocalDate testDate = LocalDate.now();
         
         BookUnitEntity entity = new BookUnitEntity(1, 100, "English", 300, true,
-                "http://example.com/cover.jpg", "Test Publisher", "978-3-16-148410-0", testDate);
+                "http://example.com/cover.jpg", "Test Publisher", "978-3-16-148410-0", testDate, false);
 
         assertEquals(1, entity.getId());
         assertEquals(100, entity.getBookId());
