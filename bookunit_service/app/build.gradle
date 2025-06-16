@@ -64,6 +64,10 @@ dependencies {
 
     // WebClient and Reactor dependencies
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+    // Kafka dependencies
+    implementation 'org.springframework.kafka:spring-kafka'
+    testImplementation 'org.springframework.kafka:spring-kafka-test'
 }
 
 // Apply a specific Java toolchain to ease working on different environments.

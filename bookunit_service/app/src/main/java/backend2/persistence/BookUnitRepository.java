@@ -12,4 +12,5 @@ public interface BookUnitRepository extends JpaRepository<BookUnitEntity, Intege
     List<BookUnitEntity> findAllByAvailabilityFalseAndDeletedFalse();
     BookUnitEntity findByIdAndDeletedFalse(Integer id);
     List<BookUnitEntity> findAllByBookId(Integer bookId);
+    List<BookUnitEntity> findAllByAvailabilityFalse();
 }

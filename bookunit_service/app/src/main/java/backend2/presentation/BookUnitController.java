@@ -91,4 +91,32 @@ public class BookUnitController {
         String jwtToken = authHeader.substring(7); // Remove "Bearer " prefix
         return ResponseEntity.ok(overdueUnavailableBookUnitsUseCase.getOverdueUnavailableBookUnits(jwtToken));
     }
+
+    @GetMapping("/regardless/{id}")
+    public ResponseEntity<BookUnitDTO> getBookUnitRegardlessOfDeleted(@PathVariable Integer id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        boolean isAdminOrLibrarian = authentication.getAuthorities().stream()
+            .map(GrantedAuthority::getAuthority)
+            .anyMatch(role -> role.equals("ROLE_ADMINISTRATOR") || role.equals("ROLE_LIBRARIAN"));
+        if (!isAdminOrLibrarian) {
+            return ResponseEntity.status(403).build();
+        }
+        BookUnitDTO bookUnit = getBookUnitUseCase.getBookRegardlessOfDeleted(id);
+        if (bookUnit == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(bookUnit);
+    }
+
+    @GetMapping("/regardless/book/{bookId}")
+    public ResponseEntity<List<BookUnitDTO>> getBookUnitsByBookIdRegardlessOfDeleted(@PathVariable Integer bookId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        boolean isAdminOrLibrarian = authentication.getAuthorities().stream()
+            .map(GrantedAuthority::getAuthority)
+            .anyMatch(role -> role.equals("ROLE_ADMINISTRATOR") || role.equals("ROLE_LIBRARIAN"));
+        if (!isAdminOrLibrarian) {
+            return ResponseEntity.status(403).build();
+        }
+        return ResponseEntity.ok(getBookUnitsByBookIdUseCase.getBookUnitsByBookIdRegardlessOfDeleted(bookId));
+    }
 }

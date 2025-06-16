@@ -11,13 +11,7 @@ import java.util.Collections;
 @Configuration
 public class RabbitMQConfig {
     
-    public static final String BORROWING_CREATED_QUEUE = "borrowing.created";
     public static final String BOOK_DELETED_QUEUE = "book.deleted";
-
-    @Bean
-    public Queue borrowingCreatedQueue() {
-        return new Queue(BORROWING_CREATED_QUEUE);
-    }
 
     @Bean
     public Queue bookDeletedQueue() {

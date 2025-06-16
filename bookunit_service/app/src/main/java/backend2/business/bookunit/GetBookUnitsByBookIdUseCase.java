@@ -22,4 +22,11 @@ public class GetBookUnitsByBookIdUseCase {
                 .map(bookUnitMapper::toDTO)
                 .collect(Collectors.toList());
     }
+
+    public List<BookUnitDTO> getBookUnitsByBookIdRegardlessOfDeleted(Integer bookId) {
+        return bookUnitRepository.findAllByBookId(bookId)
+                .stream()
+                .map(bookUnitMapper::toDTO)
+                .collect(Collectors.toList());
+    }
 }

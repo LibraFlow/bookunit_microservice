@@ -20,4 +20,10 @@ public class GetBookUnitUseCase {
                 .map(bookUnitMapper::toDTO)
                 .orElseThrow(() -> new RuntimeException("Book not found with id: " + id));
     }
+
+    public BookUnitDTO getBookRegardlessOfDeleted(Integer id) {
+        return bookUnitRepository.findById(id)
+            .map(bookUnitMapper::toDTO)
+            .orElseThrow(() -> new RuntimeException("Book unit not found with id: " + id));
+    }
 }
